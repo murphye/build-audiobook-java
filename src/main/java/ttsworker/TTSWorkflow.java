@@ -1,5 +1,5 @@
 // @@@SNIPSTART audiobook-project-java-Workflow-interface
-package ttspackage;
+package ttsworker;
 
 import io.temporal.workflow.QueryMethod;
 import io.temporal.workflow.WorkflowInterface;

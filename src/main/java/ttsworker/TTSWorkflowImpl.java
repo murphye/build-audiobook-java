@@ -1,11 +1,8 @@
 // @@@SNIPSTART audiobook-project-java-Workflow-implementation
-package ttspackage;
+package ttsworker;
 
 import io.temporal.activity.ActivityOptions;
-import io.temporal.common.RetryOptions;
-import io.temporal.client.WorkflowStub;
 import io.temporal.workflow.*;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;

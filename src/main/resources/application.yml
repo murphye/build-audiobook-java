@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: tts-worker
+
+  main:
+    web-application-type: none
+
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      audio:
+        speech:
+          options:
+            model: tts-1
+            voice: nova
+            response-format: mp3
+
+  temporal:
+    connection:
+      target: localhost:7233
+
+    workers:
+      - task-queue: tts-task-queue
+        workflow-classes:
+          - ttsworker.TTSWorkflowImpl
+        activity-beans:
+          - ttsActivities
+
+logging:
+  level:
+    io.temporal: INFO
+    ttsworker: INFO
+    org.springframework.ai: DEBUG

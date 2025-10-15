@@ -1,5 +1,5 @@
 // @@@SNIPSTART audiobook-project-java-tts-interface
-package ttspackage;
+package ttsworker;
 
 import io.temporal.activity.ActivityInterface;
 import java.nio.file.Path;

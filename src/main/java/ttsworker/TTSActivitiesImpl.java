@@ -1,5 +1,5 @@
 // @@@SNIPSTART audiobook-project-java-tts-implementation
-package ttspackage;
+package ttsworker;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.failure.ApplicationFailure;
@@ -7,16 +7,21 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.List;
-import java.util.logging.Logger;
-import okhttp3.*;
 import org.apache.commons.io.FilenameUtils;
-import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.ai.openai.OpenAiAudioSpeechModel;
+import org.springframework.ai.openai.api.OpenAiAudioApi;
+import org.springframework.ai.openai.audio.speech.SpeechPrompt;
+import org.springframework.ai.openai.audio.speech.SpeechResponse;
 
 public class TTSActivitiesImpl implements TTSActivities {
-    private String bearerToken = null;
+    private static final Logger logger = LoggerFactory.getLogger(TTSActivitiesImpl.class);
 
-    TTSActivitiesImpl(String bearerToken) {
-        this.bearerToken = bearerToken;
+    private final OpenAiAudioSpeechModel speechModel;
+
+    public TTSActivitiesImpl(OpenAiAudioSpeechModel speechModel) {
+        this.speechModel = speechModel;
     }
 
     ApplicationFailure fail(String reason, String issue) {
@@ -94,46 +99,18 @@ public class TTSActivitiesImpl implements TTSActivities {
         return null;
     }
 
-    byte[] textToSpeech(String text) throws IOException {
-        String apiEndpoint = "https://api.openai.com/v1/audio/speech";
-
-        OkHttpClient client = new OkHttpClient();
-        
-        JSONObject json = new JSONObject();
-        json.put("model", "tts-1");
-        json.put("input", text);
-        json.put("voice", "nova"); // see https://platform.openai.com/docs/guides/text-to-speech/voice-options
-        json.put("response_format", "mp3");
-
-        MediaType mediaType = MediaType.get("application/json; charset=utf-8");
-        RequestBody body = RequestBody.create(json.toString(), mediaType);
-
-        Request request = new Request.Builder()
-            .url(apiEndpoint)
-            .post(body)
-            .addHeader("Authorization", "Bearer " + bearerToken)
-            .build();
-
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new IOException("Unexpected code " + response);
-            }
-            return response.body().bytes();
-        }
+    byte[] textToSpeech(String text) {
+        SpeechPrompt speechPrompt = new SpeechPrompt(text);
+        SpeechResponse response = speechModel.call(speechPrompt);
+        return response.getResult().getOutput();
     }
 
     @Override
     public void process(String chunk, Path outputPath) {
-        byte[] audio;
+        byte[] audio = textToSpeech(chunk);
 
         try {
-            audio = textToSpeech(chunk);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        try {
-            Files.write(outputPath, audio, 
+            Files.write(outputPath, audio,
                             java.nio.file.StandardOpenOption.CREATE,
                             java.nio.file.StandardOpenOption.APPEND);
         } catch (IOException e) {

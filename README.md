@@ -82,7 +82,7 @@ Use the Workflow `execute` subcommand to watch the execution in real time from t
 temporal workflow execute \
     --type TTSWorkflow \
     --task-queue tts-task-queue \
-    --input '"/path/to/your/text-file.txt"' \
+    --input '"text-samples/doyle.txt"' \
     --workflow-id "tristam-shandy-tts"
 ```
 

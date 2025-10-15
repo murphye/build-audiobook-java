@@ -1,21 +1,33 @@
 // @@@SNIPSTART audiobook-project-java-Gradle-build-file
-group 'ttspackage'; version '0.0.1'
-repositories { mavenCentral() }
-apply plugin: 'java'
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.6'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group 'ttspackage'
+version '0.0.1'
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    sourceCompatibility = '21'
+    targetCompatibility = '21'
+}
+
 sourceSets.main.java.srcDirs 'src'
 
 dependencies {
-    implementation 'io.temporal:temporal-sdk:1.22.2'
-    implementation 'org.slf4j:slf4j-nop:2.0.6' // logging suppression
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'io.temporal:temporal-spring-boot-starter:1.31.0'
+    implementation platform('org.springframework.ai:spring-ai-bom:1.0.3')
+    implementation 'org.springframework.ai:spring-ai-starter-model-openai'
     implementation 'commons-io:commons-io:2.11.0'
-    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
-    implementation 'org.json:json:20210307'
 }
 
-// Run the App
-task run(type: JavaExec) {
-    classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'ttspackage.TTSWorkerApp'
+bootRun {
     standardOutput = System.out
 }
 // @@@SNIPEND
