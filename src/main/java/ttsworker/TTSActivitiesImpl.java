@@ -1,7 +1,6 @@
 // @@@SNIPSTART audiobook-project-java-tts-implementation
 package ttsworker;
 
-import io.temporal.activity.ActivityInterface;
 import io.temporal.failure.ApplicationFailure;
 import java.io.*;
 import java.nio.file.*;
@@ -11,7 +10,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.openai.OpenAiAudioSpeechModel;
-import org.springframework.ai.openai.api.OpenAiAudioApi;
 import org.springframework.ai.openai.audio.speech.SpeechPrompt;
 import org.springframework.ai.openai.audio.speech.SpeechResponse;
 
